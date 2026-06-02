@@ -1,7 +1,7 @@
 import React from "react";
 import { Wallet, Shield, History, ArrowLeft } from "lucide-react";
 import { api, type RoundView } from "./lib/api";
-import { signals } from "./lib/modes";
+
 import * as W from "./lib/wallet";
 import RoundCard from "./components/RoundCard";
 import ProvablyFair from "./components/ProvablyFair";
@@ -149,14 +149,9 @@ export default function App() {
               {history.map((r) => {
                 const b = r.targetBlock;
                 if (!b) return null;
-                const sig = signals(b);
                 return (
                   <div className="hist-row" key={r.id}>
                     <span className="bn">#{b.number.toLocaleString()}</span>
-                    <span className="hh">{b.hash.slice(0, 10)}…{b.hash.slice(-6)}</span>
-                    <span className="chip2">{sig.even ? "EVEN" : "ODD"}</span>
-                    <span className="chip2">digit {sig.digit}</span>
-                    <span className="chip2">0-99: {sig.mod100}</span>
                     <button className="verify-btn" onClick={() => setPfBlock(b.number)}>Verify</button>
                   </div>
                 );
