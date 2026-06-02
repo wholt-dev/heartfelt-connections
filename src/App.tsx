@@ -1,7 +1,7 @@
 import React from "react";
 import { Wallet, Shield, History, ArrowLeft } from "lucide-react";
 import { api, type RoundView } from "./lib/api";
-import { signals } from "./lib/modes";
+
 import * as W from "./lib/wallet";
 import RoundCard from "./components/RoundCard";
 import ProvablyFair from "./components/ProvablyFair";
