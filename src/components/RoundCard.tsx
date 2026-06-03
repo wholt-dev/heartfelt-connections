@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Flame, Zap, ChevronLeft, ArrowUpRight, Blocks } from "lucide-react";
+import { Shield, Flame, Zap, ChevronLeft, ArrowUpRight, Blocks, Sparkles, Clock } from "lucide-react";
 import { api, type RoundView } from "../lib/api";
 import { MODES, HEX, signals, type ModeMeta } from "../lib/modes";
 import * as W from "../lib/wallet";
