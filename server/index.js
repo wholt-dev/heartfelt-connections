@@ -7,7 +7,7 @@ import express from "express";
 import cors from "cors";
 import { JsonRpcProvider } from "ethers";
 import {
-  startEngine, liveRounds, recentHistory, placeBet,
+  startEngine, liveRounds, recentHistory, placeBet, betsForWallet,
 } from "./rounds.js";
 import { deriveSignals } from "../shared/blockgame.js";
 
@@ -22,7 +22,15 @@ app.get("/api/rounds", (_req, res) => {
 });
 
 app.get("/api/history", (req, res) => {
-  res.json({ history: recentHistory(Number(req.query.n) || 20) });
+  // supports both legacy ?n=20 and paginated ?page=1&limit=20
+  if (req.query.page || req.query.limit) {
+    return res.json(recentHistory(req.query.page, req.query.limit));
+  }
+  res.json({ history: recentHistory(1, Number(req.query.n) || 20).history });
+});
+
+app.get("/api/bets/:wallet", (req, res) => {
+  res.json(betsForWallet(req.params.wallet, req.query.page, req.query.limit));
 });
 
 app.post("/api/bet", (req, res) => {

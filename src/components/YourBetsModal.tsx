@@ -121,18 +121,20 @@ export default function YourBetsModal({
 }) {
   const [tab, setTab] = React.useState<"live" | "ended">("live");
   const [ended, setEnded] = React.useState<EndedBet[]>([]);
+  const [endedPage, setEndedPage] = React.useState(1);
+  const ENDED_PER_PAGE = 20;
   const [detail, setDetail] = React.useState<{ blockKey: string; mode: string } | null>(null);
   const [verifyCache, setVerifyCache] = React.useState<Record<number, any>>({});
 
   React.useEffect(() => {
-    if (!address) { setEnded([]); return; }
+    if (!address) return; // never clear on disconnect: keep history visible until remount
     let alive = true;
     const load = async () => {
       try {
-        const r = await fetch(`${API_BASE}/api/bets/${address}`);
+        const r = await fetch(`${API_BASE}/api/bets/${address}?page=1&limit=200`);
         if (!r.ok) return;
         const j = await r.json();
-        if (alive) setEnded(j.bets || []);
+        if (alive && Array.isArray(j.bets)) setEnded(j.bets);
       } catch { /* */ }
     };
     load();
@@ -247,34 +249,64 @@ export default function YourBetsModal({
         ) : (
           endedGroups.length === 0 ? (
             <EmptyState text="No settled bets yet." />
-          ) : (
-            <div style={cardGrid}>
-              {endedGroups.map((g) => {
-                const won = g.net >= 0;
-                return (
-                  <BetCard
-                    key={`ended-${g.block}`}
-                    blockKey={`ended-${g.block}`}
-                    blockLabel={`#${g.block.toLocaleString()}`}
-                    badgeKind={won ? "win" : "loss"}
-                    badgeValue={`${won ? "+" : "-"}◆${Math.abs(g.net).toFixed(4)}`}
-                    betsByMode={Object.fromEntries(g.bets.map((b) => [b.mode, b]))}
-                    onModeClick={(m) => openDetail(`ended-${g.block}`, m, g.block)}
-                    footer={
-                      <a href={`${EXPLORER}/block/${g.block}`} target="_blank" rel="noreferrer"
-                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                          marginTop: 14, background: won ? "#22c55e" : "#ef4444", color: "#fff",
-                          border: "3px solid #000", borderRadius: 10, padding: "10px 12px",
-                          fontWeight: 800, textDecoration: "none",
-                          boxShadow: "3px 3px 0 0 rgba(0,0,0,.9)" }}>
-                        VERIFY <ExternalLink size={14} />
-                      </a>
-                    }
-                  />
-                );
-              })}
-            </div>
-          )
+          ) : (() => {
+            const totalPages = Math.max(1, Math.ceil(endedGroups.length / ENDED_PER_PAGE));
+            const safePage = Math.min(endedPage, totalPages);
+            const start = (safePage - 1) * ENDED_PER_PAGE;
+            const pageGroups = endedGroups.slice(start, start + ENDED_PER_PAGE);
+            return (
+              <>
+                <div style={cardGrid}>
+                  {pageGroups.map((g) => {
+                    const won = g.net >= 0;
+                    return (
+                      <BetCard
+                        key={`ended-${g.block}`}
+                        blockKey={`ended-${g.block}`}
+                        blockLabel={`#${g.block.toLocaleString()}`}
+                        badgeKind={won ? "win" : "loss"}
+                        badgeValue={`${won ? "+" : "-"}◆${Math.abs(g.net).toFixed(4)}`}
+                        betsByMode={Object.fromEntries(g.bets.map((b) => [b.mode, b]))}
+                        onModeClick={(m) => openDetail(`ended-${g.block}`, m, g.block)}
+                        footer={
+                          <a href={`${EXPLORER}/block/${g.block}`} target="_blank" rel="noreferrer"
+                            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                              marginTop: 14, background: won ? "#22c55e" : "#ef4444", color: "#fff",
+                              border: "3px solid #000", borderRadius: 10, padding: "10px 12px",
+                              fontWeight: 800, textDecoration: "none",
+                              boxShadow: "3px 3px 0 0 rgba(0,0,0,.9)" }}>
+                            VERIFY <ExternalLink size={14} />
+                          </a>
+                        }
+                      />
+                    );
+                  })}
+                </div>
+                {totalPages > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", alignItems: "center",
+                    gap: 12, marginTop: 22 }}>
+                    <button
+                      onClick={() => setEndedPage((p) => Math.max(1, p - 1))}
+                      disabled={safePage <= 1}
+                      style={{ background: "#fff", color: "#000", border: "3px solid #000",
+                        borderRadius: 10, padding: "8px 14px", fontWeight: 800, cursor: "pointer",
+                        boxShadow: "3px 3px 0 0 rgba(0,0,0,.9)",
+                        opacity: safePage <= 1 ? 0.4 : 1 }}>← Previous</button>
+                    <span style={{ fontWeight: 800, fontFamily: "'JetBrains Mono',monospace" }}>
+                      Page {safePage} / {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setEndedPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={safePage >= totalPages}
+                      style={{ background: "#fff", color: "#000", border: "3px solid #000",
+                        borderRadius: 10, padding: "8px 14px", fontWeight: 800, cursor: "pointer",
+                        boxShadow: "3px 3px 0 0 rgba(0,0,0,.9)",
+                        opacity: safePage >= totalPages ? 0.4 : 1 }}>Next →</button>
+                  </div>
+                )}
+              </>
+            );
+          })()
         )}
 
         {/* detail popup */}
@@ -387,8 +419,10 @@ function ModeDetail({
         case "txou": actual = s.txou.toUpperCase(); break;
         case "gasou": actual = s.gasou.toUpperCase(); break;
         case "closest": actual = s.mod1000; break;
+        case "perfectblock": actual = `#${Number(v.block.number).toLocaleString()}`; break;
       }
     }
+    if (!v?.block && detail.mode === "perfectblock") actual = `#${block.toLocaleString()}`;
     body = bet ? (
       <>
         <Row k="Block" v={`#${block.toLocaleString()}`} mono />

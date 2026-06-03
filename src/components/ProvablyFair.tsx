@@ -124,6 +124,16 @@ function Breakdown({ data }: { data: { block: any; signals: any } }) {
           ["Compare to the line of 500,000", `${Number(block.gasUsed).toLocaleString()} ${Number(block.gasUsed) > 500000 ? "> 500k → OVER" : "≤ 500k → UNDER"}`],
         ]}
       />
+
+      <Game
+        name="Perfect Block ⚡" result={`#${block.number.toLocaleString()}`}
+        steps={[
+          ["You guess the exact block number before the round opens (first 2 min only)", ""],
+          ["When the round settles, the chain's current block number is taken", `#${block.number.toLocaleString()}`],
+          ["If your guess === that block number, you win 50× your stake", `Stake 0.01 → Win 0.50 zkLTC`],
+          ["No randomness from the hash — only the block height decides", "block.number"],
+        ]}
+      />
     </>
   );
 }

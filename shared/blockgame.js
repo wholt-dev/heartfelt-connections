@@ -54,6 +54,8 @@ export function deriveSignals(block) {
  */
 export const TX_LINE = 5;        // Txn Over/Under threshold
 export const GAS_LINE = 500000;  // Gas Over/Under threshold
+export const PERFECT_BLOCK_WINDOW_MS = 2 * 60 * 1000; // first 2 minutes of a round
+export const PERFECT_BLOCK_MULTIPLIER = 50;           // 50x reward for exact guess
 
 export const MODES = {
   coinflip: {
@@ -111,6 +113,14 @@ export const MODES = {
     multiplier: 0, // PvP — pot split, handled separately
     settle: () => false,
     resultOf: (block) => mod(block.hash, 1000),
+  },
+  perfectblock: {
+    label: "Perfect Block",
+    desc: "Guess the exact block number → 50× reward.",
+    picks: null, // any integer block number
+    multiplier: PERFECT_BLOCK_MULTIPLIER,
+    settle: (block, pick) => Number(block.number) === Number(pick),
+    resultOf: (block) => block.number,
   },
 };
 
