@@ -190,7 +190,7 @@ export default function RoundCard({
           </div>
 
           <div className="pm-q">
-            <div className="pm-icon"><Zap size={18} /></div>
+            <div className="pm-icon" style={{ background: "transparent", boxShadow: "none", padding: 0, overflow: "hidden" }}><img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="" width={40} height={40} style={{ borderRadius: 10, objectFit: "cover", display: "block" }} /></div>
             <h3 style={{ flex: 1 }}>{mode.desc}</h3>
             <button
               onClick={() => setHelpOpen(true)}

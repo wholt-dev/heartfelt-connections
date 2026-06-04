@@ -393,8 +393,9 @@ input,button{font-family:inherit}
 /* ===== ZONE GRID: rounds + recent-blocks sidebar ===== */
 .zone-grid{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
 .zone-grid .rounds{grid-template-columns:1fr 1fr}
-@media(max-width:1100px){.zone-grid{grid-template-columns:1fr}.zone-grid .rounds{grid-template-columns:1fr 1fr}.side{order:-1}}
+@media(max-width:1100px){.zone-grid{grid-template-columns:1fr}.zone-grid .rounds{grid-template-columns:1fr 1fr}}
 @media(max-width:880px){.zone-grid .rounds{grid-template-columns:1fr}}
+@media(max-width:767px){.side{position:static;max-height:none;overflow:visible;order:2}}
 
 /* ===== ROUNDS CAROUSEL ===== */
 .rounds-carousel{width:100%}
