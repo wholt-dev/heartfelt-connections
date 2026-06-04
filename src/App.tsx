@@ -133,7 +133,8 @@ export default function App() {
       <div className="app zone-mode">
         <div className="topbar">
           <div className="logo" style={{ cursor: "pointer" }} onClick={() => setView("home")}>
-            <div><h1>Bets<b>On</b>Block</h1><span>Provably fair · LitVM</span></div>
+            <img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="BetsOnBlock" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
+            <div><h1>Bets<b>On</b>Block</h1></div>
           </div>
           <div className="top-right">
             <div className="live-head"><span className="pulse" /> Block <b className="mono" style={{ marginLeft: 4 }}>#{head?.toLocaleString() ?? "…"}</b></div>
