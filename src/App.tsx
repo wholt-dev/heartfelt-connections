@@ -13,6 +13,8 @@ import YourBetsModal from "./components/YourBetsModal";
 import WalletButton from "./components/WalletButton";
 import CoinImg from "./components/Coin";
 import WinnersMarquee from "./components/WinnersMarquee";
+import PointsToast from "./components/PointsToast";
+import YourPointsModal from "./components/YourPointsModal";
 
 export default function App() {
   const [view, setView] = React.useState<"home" | "zone">(
