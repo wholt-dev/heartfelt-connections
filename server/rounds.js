@@ -135,9 +135,6 @@ export function placeBet({ wallet, roundId, mode, pick, stake }) {
   const amt = Number(stake);
   if (!Number.isFinite(amt) || amt <= 0) return { ok: false, error: "bad_stake" };
   if (mode === "perfectblock") {
-    if (Date.now() >= r.openAt + PERFECT_BLOCK_WINDOW_MS) {
-      return { ok: false, error: "perfect_block_window_closed" };
-    }
     const n = Number(pick);
     if (!Number.isInteger(n) || n <= 0) return { ok: false, error: "bad_block_number" };
   }
