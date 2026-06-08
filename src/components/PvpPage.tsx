@@ -101,7 +101,13 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
       if (!r.ok) return;
       const j = await r.json();
       const arr: EndedRound[] = Array.isArray(j) ? j : (j.history || j.rounds || []);
-      setHistory(arr.slice(0, 10));
+      const normalized = arr.map((r: any) => ({
+        round_id: r.round_id ?? r.id ?? r.roundId,
+        winning_tile: r.winning_tile,
+        drand_verify_url: r.drand_verify_url,
+        drand_round: r.drand_target_round ?? r.drand_round,
+      }));
+      setHistory(normalized.slice(0, 10));
     } catch { /* */ }
   }, []);
   React.useEffect(() => {
