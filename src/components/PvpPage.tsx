@@ -202,7 +202,6 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
       if (prev !== "cooldown") loadHistory(status.round_id ?? prevRoundRef.current);
     } else if (prev === "cooldown" && status.status === "open") {
       setCooldownSeconds(0);
-      setSpinInKey((k) => k + 1);
       setToast(`🎲 Round #${status.round_id} Started — Place Your Bets!`);
       setTimeout(() => setToast(null), 3500);
     }
