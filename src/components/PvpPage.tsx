@@ -451,14 +451,31 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
           <img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
           <div><h1>Bets<b>On</b>Block</h1></div>
         </div>
-        <div style={{ flex: 1 }} />
-        <div className="live-head"><span className="pulse" /> PVP <b className="mono" style={{ marginLeft: 4 }}>#{status?.round_id ?? "…"}</b></div>
-        <div style={{ flex: 1 }} />
-        <div className="top-right" />
+        <div style={{ flex: 1, display: "flex", justifyContent: "center", padding: "0 16px" }}>
+          <div style={{
+            background: "#ffffff", border: "2px solid #0f172a",
+            borderRadius: 12, padding: "8px 14px", boxShadow: "3px 3px 0 0 rgba(15,23,42,.9)", color: "#0f172a",
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
+            minWidth: 360, maxWidth: 560, width: "100%",
+          }}>
+            <div className="side-head" style={{ fontSize: 12, marginBottom: 0 }}>
+              <Shield size={13} style={{ verticalAlign: "middle", marginRight: 6, color: "#7c5cff" }} />
+              Drand · <span style={{ color: "#7c5cff" }}>Target</span> · #{status?.drand_target_round ?? "—"} · Round <span style={{ color: "#0f172a" }}>#{status?.round_id ?? "—"}</span>
+            </div>
+            {status?.drand_verify_url && (
+              <a href={status.drand_verify_url} target="_blank" rel="noreferrer"
+                className="verify-btn"
+                style={{ gap: 6, textDecoration: "none", whiteSpace: "nowrap" }}>
+                Verify on Drand <ExternalLink size={12} />
+              </a>
+            )}
+          </div>
+        </div>
+        <div className="live-head" style={{ marginLeft: "auto" }}><span className="pulse" /> PVP <b className="mono" style={{ marginLeft: 4 }}>#{status?.round_id ?? "…"}</b></div>
       </div>
 
-      <div className="wrap" style={{ paddingTop: 12 }}>
-        <button className="back-link" onClick={onBack} style={{ color: "#0f172a", marginBottom: 10 }}><ArrowLeft size={14} /> Back to home</button>
+      <div className="wrap" style={{ paddingTop: 8 }}>
+        <button className="back-link" onClick={onBack} style={{ color: "#0f172a", marginBottom: 6 }}><ArrowLeft size={14} /> Back to home</button>
 
 
         <div style={{ display: "grid", gridTemplateColumns: "320px 1fr 320px", gap: 22, alignItems: "start" }}>
@@ -482,30 +499,8 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
             onStopAuto={() => setAutoCfg(null)}
           />
 
-          {/* WHEEL COLUMN: Drand card above wheel */}
+          {/* WHEEL COLUMN */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* DRAND TARGET — centered above wheel */}
-            <div style={{
-              background: "#ffffff", border: "2px solid #0f172a",
-              borderRadius: 14, padding: 14, boxShadow: "4px 4px 0 0 rgba(15,23,42,.9)", color: "#0f172a",
-              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
-              alignSelf: "center", minWidth: 360, maxWidth: 520, width: "100%",
-            }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <div className="side-head" style={{ fontSize: 13, marginBottom: 0 }}>
-                  <Shield size={14} style={{ verticalAlign: "middle", marginRight: 6, color: "#7c5cff" }} />
-                  Drand · <span style={{ color: "#7c5cff" }}>Target</span> · #{status?.drand_target_round ?? "—"} · Round <span style={{ color: "#0f172a" }}>#{status?.round_id ?? "—"}</span>
-                </div>
-              </div>
-              {status?.drand_verify_url && (
-                <a href={status.drand_verify_url} target="_blank" rel="noreferrer"
-                  className="verify-btn"
-                  style={{ gap: 6, textDecoration: "none", whiteSpace: "nowrap" }}>
-                  Verify on Drand <ExternalLink size={12} />
-                </a>
-              )}
-            </div>
-
             {/* WHEEL */}
             <div style={{
               background: "radial-gradient(ellipse at center, #ffffff 0%, #f1f3f7 75%)",
