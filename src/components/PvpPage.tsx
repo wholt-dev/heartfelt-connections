@@ -13,7 +13,7 @@ const HISTORY_URL = `${API}/bets/history`;
 const CONFIRM_URL = `${API}/bets/confirm`;
 const TILES = 30;
 
-const CONTRACT_ADDRESS = "0xf82776F9b7FcC338d6a677F138f55eE0Cf26807A";
+const CONTRACT_ADDRESS = "0xfC4f072f48d0981BfdEED048356c0Bf80d7799Aa";
 const CHAIN_ID = 4441;
 const CHAIN_ID_HEX = "0x1159";
 const RPC_URL = "https://liteforge.rpc.caldera.xyz/http";
@@ -21,14 +21,9 @@ const EXPLORER_TX = "https://liteforge.explorer.caldera.xyz/tx";
 const MIN_BET = 0.001;
 
 const BET_ABI = [
-  {
-    inputs: [{ internalType: "uint8", name: "tile", type: "uint8" }],
-    name: "placeBet",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-] as const;
+  "function placeBet(uint8 tile) external payable",
+  "function getCurrentRound() external view returns (uint256 id, bool resolved, uint8 winningTile, uint256 totalPool)"
+];
 
 async function ensureLiteForge() {
   const eth = (window as any).ethereum;
