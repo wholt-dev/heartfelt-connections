@@ -2,7 +2,7 @@ import React from "react";
 import { History as HistoryIcon, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 
 const HISTORY_URL = "https://lit-api.test-hub.xyz/bets/history";
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 1;
 
 type RawBet = { wallet?: string; tile?: number | string; amount?: number | string; tx_hash?: string };
 type RawPayout = { wallet?: string; bet?: number | string; payout?: number | string };
