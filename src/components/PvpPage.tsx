@@ -556,16 +556,15 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
             borderRadius: 14, padding: 18, boxShadow: "4px 4px 0 0 rgba(15,23,42,.9)", color: "#0f172a",
             display: "flex", flexDirection: "column", gap: 12,
           }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              <div style={{ fontSize: 10, letterSpacing: ".18em", color: "#475569", fontWeight: 800 }}>
-                <History size={11} style={{ verticalAlign: "middle", marginRight: 4, color: "#7c5cff" }} />
-                ENDED · <span style={{ color: "#7c5cff" }}>ROUNDS</span>
-              </div>
-              <div style={{
-                fontSize: 9, padding: "3px 8px", borderRadius: 999,
+            <div className="side-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 0 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <History size={15} /> Ended Rounds
+              </span>
+              <span style={{
+                fontSize: 10, padding: "3px 8px", borderRadius: 999,
                 background: "rgba(124,92,255,.12)", color: "#7c5cff",
                 border: "1px solid rgba(124,92,255,.4)", fontWeight: 800, letterSpacing: ".12em",
-              }}>{history.length} TOTAL</div>
+              }}>{history.length} TOTAL</span>
             </div>
             <div style={{ borderTop: "1px solid rgba(15,23,42,.10)", paddingTop: 10, maxHeight: 560, overflowY: "auto" }}>
               {history.length === 0 ? (
