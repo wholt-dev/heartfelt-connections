@@ -319,7 +319,7 @@ export default function PvpWheelVisual({
       return { fill: "rgba(168,85,247,0.1)", stroke: "rgba(168,85,247,0.5)", strokeWidth: 1.2, glow: "", opacity: 0.95, transform: "none" };
     }
     if (hovered === tileLabel && isOpen && !animating) {
-      return { fill: "rgba(255,255,255,0.08)", stroke: "rgba(255,255,255,0.5)", strokeWidth: 1.6, glow: "drop-shadow(0 0 10px rgba(255,255,255,0.2))", opacity: 1, transform: "none" };
+      return { fill: "rgba(124,92,255,0.28)", stroke: "rgba(124,92,255,1)", strokeWidth: 2.2, glow: "drop-shadow(0 0 18px rgba(124,92,255,0.75))", opacity: 1, transform: "scale(1.08)" };
     }
     return { fill: phaseGlow ? "rgba(245,158,11,0.12)" : "rgba(255,255,255,0.02)", stroke: phaseGlow ? "rgba(245,158,11,0.55)" : "rgba(255,255,255,0.16)", strokeWidth: 1.1, glow: "", opacity: 0.7, transform: "none" };
   };
