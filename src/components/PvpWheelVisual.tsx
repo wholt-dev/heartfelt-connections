@@ -469,8 +469,8 @@ export default function PvpWheelVisual({
               <span style={{
                 fontSize: 30, fontWeight: 900,
                 fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                color: isOpen ? "#fb923c" : isLocked ? "#fbbf24" : "#a1a1aa",
-              }}>{isLocked ? "00:00" : fmtClock(timeLeftMs)}</span>
+                color: (isOpen || timeLeftMs > 0) ? "#fb923c" : isLocked ? "#fbbf24" : "#a1a1aa",
+              }}>{fmtClock(timeLeftMs)}</span>
             ) : (
               <span style={{
                 fontSize: center.countdown ? 44 : 22,
