@@ -570,14 +570,17 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
             )}
           </div>
         </div>
-        <div className="live-head" style={{ marginLeft: "auto" }}><span className="pulse" /> PVP <b className="mono" style={{ marginLeft: 4 }}>#{status?.round_id ?? "…"}</b></div>
+        <div className="live-head" style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 10 }}>
+          <MyBetsModal address={addr} refreshKey={myBetsRefresh} />
+          <span style={{ display: "inline-flex", alignItems: "center" }}><span className="pulse" /> PVP <b className="mono" style={{ marginLeft: 4 }}>#{status?.round_id ?? "…"}</b></span>
+        </div>
       </div>
 
       <div className="wrap" style={{ paddingTop: 8 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
           <button className="back-link" onClick={onBack} style={{ color: "#0f172a" }}><ArrowLeft size={14} /> Back to home</button>
-          <MyBetsModal address={addr} refreshKey={myBetsRefresh} />
         </div>
+
 
 
         <div style={{ display: "grid", gridTemplateColumns: "320px 1fr 320px", gap: 22, alignItems: "start" }}>
