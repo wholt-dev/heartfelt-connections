@@ -29,6 +29,7 @@ export default function PvpWheelVisual({
   pot,
   winningTile,
   animationRoundId,
+  isBonanza = false,
   myTiles,
   selectedTiles,
   tilesWithBets,
@@ -50,6 +51,7 @@ export default function PvpWheelVisual({
   pot: number;
   winningTile?: number | null;
   animationRoundId?: number | null;
+  isBonanza?: boolean;
   myTiles: Set<number>;
   selectedTiles?: Set<number>;
   tilesWithBets?: Set<number>;
@@ -58,6 +60,7 @@ export default function PvpWheelVisual({
   soundOn?: boolean;
   onAnimationComplete?: () => void;
 }) {
+
 
   // ---- animation state ----
   const [highlighted, setHighlighted] = React.useState<number | null>(null);
