@@ -158,6 +158,8 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
           drand_verify_url: j.drand_verify_url,
           drand_round: j.drand_target_round ?? j.drand_round,
         }, "status");
+      } else if (apiRoundId != null && j.status !== "open" && animationTriggeredRoundRef.current !== apiRoundId) {
+        loadHistoryRef.current?.(apiRoundId);
       }
 
       const prevStatus = lastPollStatusRef.current;
