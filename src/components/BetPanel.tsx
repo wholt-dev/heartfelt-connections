@@ -126,15 +126,15 @@ export default function BetPanel({
     >
       {/* HEADER */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-        <div style={{ fontSize: 10, letterSpacing: ".18em", color: "#475569", fontWeight: 800 }}>
-          ROUND #{roundId ?? "—"} · <span style={{ color: "#7c5cff" }}>{statusLabel}</span>
+        <div className="side-head" style={{ fontSize: 13, marginBottom: 0 }}>
+          Round #{roundId ?? "—"} · <span style={{ color: "#7c5cff" }}>{statusLabel}</span>
         </div>
         {autoActive && (
-          <div style={{
-            fontSize: 9, padding: "3px 8px", borderRadius: 999,
+          <div className="side-head" style={{
+            fontSize: 11, padding: "3px 8px", borderRadius: 999,
             background: "rgba(124,92,255,.12)", color: "#7c5cff",
-            border: "1px solid rgba(124,92,255,.4)", fontWeight: 800, letterSpacing: ".12em",
-          }}>AUTO · {autoRoundsLeft} LEFT</div>
+            border: "1px solid rgba(124,92,255,.4)", marginBottom: 0,
+          }}>Auto · {autoRoundsLeft} left</div>
         )}
       </div>
 
@@ -142,15 +142,14 @@ export default function BetPanel({
       <div style={{ display: "grid", gridTemplateColumns: "1fr", borderBottom: "1px solid #0f172a" }}>
         <button
           onClick={() => setMode("manual")}
+          className="side-head"
           style={{
             background: "transparent", border: 0, cursor: "default",
-            padding: "10px 0",
-            color: "#7c5cff",
-            fontWeight: 800, letterSpacing: ".24em", fontSize: 12,
+            padding: "10px 0", margin: 0,
+            color: "#7c5cff", fontSize: 14,
             borderBottom: "2px solid #fb923c",
-            textTransform: "uppercase",
           }}
-        >manual</button>
+        >Manual</button>
       </div>
 
       {/* TILES SELECTION */}
