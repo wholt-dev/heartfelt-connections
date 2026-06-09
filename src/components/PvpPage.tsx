@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { BrowserProvider, Contract, parseEther } from "ethers";
 import PvpWheelVisual from "./PvpWheelVisual";
+import MyBetsHistory from "./MyBetsHistory";
 import BetPanel, { AutoConfig } from "./BetPanel";
 import { sounds } from "../lib/pvpSounds";
 
@@ -136,6 +137,7 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
   const [toast, setToast] = React.useState<string | null>(null);
   const [lastTxHash, setLastTxHash] = React.useState<string | null>(null);
   const [animationWinner, setAnimationWinner] = React.useState<EndedRound | null>(null);
+  const [myBetsRefresh, setMyBetsRefresh] = React.useState(0);
 
   const prevRoundRef = React.useRef<number | null>(null);
   const prevStatusRef = React.useRef<string | null>(null);
@@ -486,6 +488,8 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
       setSelectedTilesState(new Set());
       loadMyBets();
       loadStatus();
+      setMyBetsRefresh((n) => n + 1);
+      window.setTimeout(() => setMyBetsRefresh((n) => n + 1), 2500);
     } else if (errMsg) {
       setToast(`❌ ${errMsg}`);
     }
@@ -681,6 +685,8 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
             </div>
           </div>
         </div>
+
+        <MyBetsHistory address={addr} refreshKey={myBetsRefresh} />
 
       </div>
 
