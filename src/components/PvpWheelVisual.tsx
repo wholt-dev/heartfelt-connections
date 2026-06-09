@@ -219,7 +219,7 @@ export default function PvpWheelVisual({
       setHighlighted(null);
       setDimOthers(true);
       setShake(true);
-      play(() => sounds.winner());
+      play(() => sounds.jackpot());
       const youWon = myTiles.has(winningTile);
       setCenter({
         line1: `🏆 TILE ${winningTile} WINS`,
@@ -227,24 +227,14 @@ export default function PvpWheelVisual({
         line3: youWon ? `YOU WON! +${(myPayout ?? pot).toFixed(3)} zkLTC` : "",
       });
       setTimeout(() => setShake(false), 600);
-      await sleep(1100);
+      // Hold the winner on screen — parent already shows "NEXT IN Xs"
+      // so we do NOT run a separate 5..1 countdown here.
+      await sleep(2200);
 
-
-      // PHASE G — new round loader
-      setPhase("new-round");
-      setDimOthers(false);
-      setWinnerTile(null);
-      for (let c = 5; c >= 1; c--) {
-        if (cancelled) return;
-        setCenter({ line1: "NEW ROUND IN", line2: String(c), countdown: true });
-        play(() => sounds.tick(400 + (6 - c) * 40));
-        await sleep(360);
-      }
-
-      // PHASE H — reset + flash
+      // PHASE H — reset + flash, hand control back to parent status display
       if (cancelled) return;
       setFlash(true);
-      await sleep(260);
+      await sleep(220);
       setFlash(false);
       setHighlighted(null);
       setWinnerTile(null);
@@ -256,6 +246,7 @@ export default function PvpWheelVisual({
       animationRunningRef.current = false;
       onAnimationComplete?.();
     };
+
 
     run();
     return () => { cancelled = true; };
