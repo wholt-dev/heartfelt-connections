@@ -100,6 +100,7 @@ function normalizeEndedRound(raw: any): EndedRound | null {
   return {
     round_id: roundId,
     winning_tile: winningTile,
+    total_pool: Number.isFinite(Number(raw?.total_pool)) ? Number(raw?.total_pool) : 0,
     status,
     drand_verify_url: raw?.drand_verify_url,
     drand_round: raw?.drand_target_round ?? raw?.drand_round,
