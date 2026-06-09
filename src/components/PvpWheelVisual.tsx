@@ -67,6 +67,8 @@ export default function PvpWheelVisual({
   const tooltipTimerRef = React.useRef<number | null>(null);
   const animRanForRoundRef = React.useRef<number | null>(null);
   const lastTickSecRef = React.useRef<number>(-1);
+  const winningTileRef = React.useRef<number | null>(null);
+  const animationRunningRef = React.useRef<boolean>(false);
 
   const play = React.useCallback((fn: () => void) => { if (soundOn) fn(); }, [soundOn]);
 
@@ -92,10 +94,22 @@ export default function PvpWheelVisual({
     const animationKey = animationRoundId ?? (isCooldown ? roundId : null);
     if (winningTile == null || animationKey == null) return;
     if (animRanForRoundRef.current === animationKey) return;
+
+    // Validate winning tile before doing anything
+    const wt = Number(winningTile);
+    if (!Number.isFinite(wt) || wt < 1 || wt > 30) {
+      console.error("[Animation] Invalid winning tile, aborting:", winningTile);
+      return;
+    }
+
     animRanForRoundRef.current = animationKey;
+    winningTileRef.current = wt;
+    animationRunningRef.current = true;
     let cancelled = false;
 
     const run = async () => {
+      const winningTile = wt; // local stable copy used throughout
+      console.log("[Animation] Starting for round", animationKey, "winning tile:", winningTile);
       setAnimating(true);
       setPhase("sequence");
       setWinnerTile(null);
@@ -153,42 +167,55 @@ export default function PvpWheelVisual({
         await sleep(110);
       }
 
-      // PHASE E — sweep + slowdown landing on drand winner
+      // PHASE E — fast sweep + slowdown landing exactly on winningTile
       if (cancelled) return;
       setPhase("sweep");
       setCenter({ line1: `ROUND #${animationKey}`, line2: "DRAND", line3: "PICKING WINNER" });
 
-      // Build a fixed step plan: fast laps then deceleration ending exactly on winningTile.
-      const target = winningTile; // captured
-      // Fast spin: 3 full laps at constant speed
-      const fastSteps = TILE_COUNT * 3;
-      // Deceleration: end on target. We compute steps so that after fastSteps + decelSteps we land on target.
-      // Start at tile 1, after fastSteps current = ((1-1 + fastSteps) % 30) + 1 = 1.
-      // We want final tile = target. decelSteps needed = ((target - 1) % 30) + extraLap*30
-      const extraLaps = 2;
-      const decelSteps = ((target - 1 + 30) % 30) + extraLaps * TILE_COUNT;
-      const totalSteps = fastSteps + decelSteps;
+      let cur = 1;
+      setHighlighted(cur);
 
-      let current = 1;
-      for (let step = 0; step < totalSteps; step++) {
+      // Fast spin: 3 full laps at constant fast speed
+      const fastTicks = TILE_COUNT * 3;
+      for (let i = 0; i < fastTicks; i++) {
         if (cancelled) return;
-        setHighlighted(current);
-        // speed curve: fast constant, then ease-out for decel portion
-        let sp: number;
-        if (step < fastSteps) {
-          sp = 24;
-        } else {
-          const t = (step - fastSteps) / Math.max(1, decelSteps - 1); // 0..1
-          // cubic ease-out from 28ms to 380ms
-          sp = 28 + Math.pow(t, 2.4) * 360;
-        }
-        if (step % 2 === 0) play(() => sounds.tick(Math.max(200, 620 - step * 4)));
-        await sleep(sp);
-        if (step < totalSteps - 1) current = (current % 30) + 1;
+        cur = (cur % 30) + 1;
+        setHighlighted(cur);
+        if (i % 2 === 0) play(() => sounds.tick(560));
+        await sleep(22);
       }
-      // Ensure we end on target
-      setHighlighted(target);
-      await sleep(140);
+
+      // Slowdown — guaranteed to stop on winningTile
+      const slowSpeeds = [28, 36, 48, 64, 84, 110, 145, 190, 250, 320, 410];
+      const minTicks = TILE_COUNT; // at least one full rotation in slow phase
+      let tickCount = 0;
+      let speedIndex = 0;
+      // Safety cap to absolutely prevent infinite loops
+      const maxTicks = TILE_COUNT * 6;
+      while (tickCount < maxTicks) {
+        if (cancelled) return;
+        cur = (cur % 30) + 1;
+        setHighlighted(cur);
+        tickCount++;
+        const sp = slowSpeeds[Math.min(speedIndex, slowSpeeds.length - 1)];
+        play(() => sounds.tick(Math.max(220, 600 - tickCount * 8)));
+        await sleep(sp);
+
+        if (
+          tickCount >= minTicks &&
+          cur === winningTile &&
+          speedIndex >= slowSpeeds.length - 2
+        ) {
+          break; // stop exactly on winning tile
+        }
+        if (tickCount >= minTicks) speedIndex++;
+      }
+
+      // Hard-guarantee final position
+      cur = winningTile;
+      setHighlighted(winningTile);
+      console.log("[Animation] Stopped on tile:", cur, "| Target was:", winningTile);
+      await sleep(180);
 
       // PHASE F — land on winner
       if (cancelled) return;
@@ -200,12 +227,13 @@ export default function PvpWheelVisual({
       play(() => sounds.winner());
       const youWon = myTiles.has(winningTile);
       setCenter({
-        line1: `TILE ${winningTile} WINS`,
+        line1: `🏆 TILE ${winningTile} WINS`,
         line2: `Pool: ${pot.toFixed(3)} zkLTC`,
         line3: youWon ? `YOU WON! +${(myPayout ?? pot).toFixed(3)} zkLTC` : "",
       });
       setTimeout(() => setShake(false), 600);
       await sleep(2400);
+
 
       // PHASE G — new round loader
       setPhase("new-round");
@@ -230,6 +258,7 @@ export default function PvpWheelVisual({
       setPhase("idle");
       setCenter({ line1: "ROUND OPEN", timer: true });
       setAnimating(false);
+      animationRunningRef.current = false;
       onAnimationComplete?.();
     };
 
