@@ -1,8 +1,8 @@
 import React from "react";
-import { ChevronDown, ChevronRight, History as HistoryIcon, X, Loader2 } from "lucide-react";
+import { History as HistoryIcon, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 
 const HISTORY_URL = "https://lit-api.test-hub.xyz/bets/history";
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 3;
 
 type RawBet = { wallet?: string; tile?: number | string; amount?: number | string; tx_hash?: string };
 type RawPayout = { wallet?: string; bet?: number | string; payout?: number | string };
@@ -20,7 +20,7 @@ type MyRound = {
   id: number;
   winning_tile: number;
   total_pool: number;
-  myBets: { tile: number; amount: number; tx_hash?: string }[];
+  myBets: { tile: number; amount: number }[];
   totalSpent: number;
   totalWon: number;
   net: number;
@@ -30,15 +30,6 @@ const num = (v: any, d = 0): number => {
   const n = Number(v);
   return Number.isFinite(n) ? n : d;
 };
-
-const netColor = (net: number) =>
-  net > 0 ? "#22c55e" : net < 0 ? "#ef4444" : "#9ca3af";
-
-function netLabel(net: number) {
-  if (net > 0) return `+${net.toFixed(3)} zkLTC ✅`;
-  if (net < 0) return `${net.toFixed(3)} zkLTC ❌`;
-  return `0 zkLTC`;
-}
 
 export default function MyBetsModal({
   address,
@@ -51,8 +42,7 @@ export default function MyBetsModal({
   const [rounds, setRounds] = React.useState<MyRound[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState<string | null>(null);
-  const [page, setPage] = React.useState(1);
-  const [expanded, setExpanded] = React.useState<Set<number>>(new Set());
+  const [page, setPage] = React.useState(0);
 
   const fetchHistory = React.useCallback(async () => {
     if (!address) { setRounds([]); return; }
@@ -70,7 +60,7 @@ export default function MyBetsModal({
         if (!Number.isFinite(id)) continue;
         const myBets = (raw.bets || [])
           .filter((b) => (b.wallet || "").toLowerCase() === addr)
-          .map((b) => ({ tile: num(b.tile), amount: num(b.amount), tx_hash: b.tx_hash }));
+          .map((b) => ({ tile: num(b.tile), amount: num(b.amount) }));
         if (myBets.length === 0) continue;
         const totalSpent = myBets.reduce((s, b) => s + b.amount, 0);
         const totalWon = (raw.payouts || [])
@@ -80,7 +70,7 @@ export default function MyBetsModal({
           id,
           winning_tile: num(raw.winning_tile),
           total_pool: num(raw.total_pool),
-          myBets,
+          myBets: myBets.sort((a, b) => a.tile - b.tile),
           totalSpent,
           totalWon,
           net: totalWon - totalSpent,
@@ -95,28 +85,12 @@ export default function MyBetsModal({
     }
   }, [address]);
 
-  // Fetch on open
-  React.useEffect(() => { if (open) fetchHistory(); }, [open, fetchHistory]);
-  // Re-fetch after bet placement, only if modal is open
+  React.useEffect(() => { if (open) { setPage(0); fetchHistory(); } }, [open, fetchHistory]);
   React.useEffect(() => { if (open) fetchHistory(); }, [refreshKey]); // eslint-disable-line
 
   const totalPages = Math.max(1, Math.ceil(rounds.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const pageRounds = rounds.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const totals = React.useMemo(() => {
-    const spent = rounds.reduce((s, r) => s + r.totalSpent, 0);
-    const won = rounds.reduce((s, r) => s + r.totalWon, 0);
-    return { spent, won, net: won - spent };
-  }, [rounds]);
-
-  const toggle = (id: number) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  };
+  const safePage = Math.min(page, totalPages - 1);
+  const pageRounds = rounds.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
 
   return (
     <>
@@ -124,12 +98,13 @@ export default function MyBetsModal({
         onClick={() => setOpen(true)}
         style={{
           display: "inline-flex", alignItems: "center", gap: 8,
-          background: "#0d0d0d", color: "#fff",
-          border: "1px solid rgba(255,255,255,.18)",
+          background: "#ffffff", color: "#0f172a",
+          border: "2px solid #0f172a",
           borderRadius: 10, padding: "8px 14px",
-          fontWeight: 700, fontSize: 13, cursor: "pointer",
+          fontWeight: 800, fontSize: 13, cursor: "pointer",
           fontFamily: "'Space Grotesk',system-ui,sans-serif",
-          boxShadow: "2px 2px 0 0 rgba(15,23,42,.9)",
+          boxShadow: "3px 3px 0 0 rgba(15,23,42,.9)",
+          letterSpacing: ".04em", textTransform: "uppercase",
         }}
       >
         <HistoryIcon size={14} /> My Bets
@@ -140,154 +115,101 @@ export default function MyBetsModal({
           onClick={() => setOpen(false)}
           style={{
             position: "fixed", inset: 0, zIndex: 9999,
-            background: "rgba(0,0,0,.75)",
+            background: "rgba(15,23,42,.55)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            padding: 16, backdropFilter: "blur(4px)",
+            padding: 20, backdropFilter: "blur(3px)",
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              width: "min(820px, 100%)", maxHeight: "90vh",
-              background: "#0d0d0d", color: "#fff",
-              border: "1px solid rgba(255,255,255,.12)", borderRadius: 16,
-              boxShadow: "0 30px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(124,92,255,.15)",
+              width: "min(1180px, 100%)", maxHeight: "92vh",
+              background: "#f3f4f6",
+              backgroundImage:
+                "linear-gradient(rgba(15,23,42,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.06) 1px,transparent 1px)",
+              backgroundSize: "32px 32px",
+              border: "2px solid #0f172a", borderRadius: 18,
+              boxShadow: "6px 6px 0 0 rgba(15,23,42,.9)",
+              color: "#0f172a",
               display: "flex", flexDirection: "column", overflow: "hidden",
               fontFamily: "'Space Grotesk',system-ui,sans-serif",
             }}
           >
-            {/* Header */}
+            {/* Header with notebook title card */}
             <div style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,.08)",
+              position: "relative",
+              padding: "26px 22px 18px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              borderBottom: "2px solid #0f172a",
             }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 10, fontWeight: 800, letterSpacing: ".04em" }}>
-                <HistoryIcon size={18} /> My Bets
+              <div style={{
+                background: "#ffffff", border: "2px solid #0f172a",
+                borderRadius: 14, padding: "12px 32px",
+                boxShadow: "4px 4px 0 0 rgba(15,23,42,.9)",
+                fontWeight: 900, fontSize: 22, letterSpacing: ".10em",
+              }}>
+                MY BETS
               </div>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close"
                 style={{
-                  background: "transparent", border: "1px solid rgba(255,255,255,.15)",
-                  color: "#fff", borderRadius: 10, padding: 6, cursor: "pointer",
-                  display: "inline-flex",
+                  position: "absolute", right: 18, top: 18,
+                  background: "#ffffff", border: "2px solid #0f172a",
+                  color: "#0f172a", borderRadius: 10, padding: 6, cursor: "pointer",
+                  display: "inline-flex", boxShadow: "2px 2px 0 0 rgba(15,23,42,.9)",
                 }}
               ><X size={16} /></button>
             </div>
 
-            {/* Summary bar */}
-            {address && rounds.length > 0 && (
-              <div style={{
-                padding: "12px 20px",
-                borderBottom: "1px solid rgba(255,255,255,.08)",
-                display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12,
-                fontSize: 12,
-              }}>
-                <SummaryCell label="Rounds" value={String(rounds.length)} />
-                <SummaryCell label="Spent" value={`${totals.spent.toFixed(3)} zkLTC`} />
-                <SummaryCell label="Won" value={`${totals.won.toFixed(3)} zkLTC`} />
-                <SummaryCell label="Net" value={netLabel(totals.net)} color={netColor(totals.net)} />
-              </div>
-            )}
-
             {/* Body */}
-            <div style={{ padding: 16, overflowY: "auto", flex: 1 }}>
+            <div style={{ padding: "22px 22px 8px", overflowY: "auto", flex: 1 }}>
               {!address ? (
                 <Empty>Connect wallet to see your bets</Empty>
-              ) : loading ? (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 40, gap: 8, color: "#9ca3af" }}>
-                  <Loader2 size={18} className="spin" style={{ animation: "spin 1s linear infinite" }} />
+              ) : loading && rounds.length === 0 ? (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 60, gap: 10, color: "#475569", fontWeight: 700 }}>
+                  <Loader2 size={20} style={{ animation: "spin 1s linear infinite" }} />
                   Loading…
                 </div>
               ) : err ? (
-                <Empty color="#ef4444">Failed to load: {err}</Empty>
+                <Empty color="#dc2626">Failed to load: {err}</Empty>
               ) : rounds.length === 0 ? (
                 <Empty>No bets yet</Empty>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {pageRounds.map((r) => {
-                    const isOpen = expanded.has(r.id);
-                    return (
-                      <div key={r.id} style={{
-                        background: "#161616",
-                        border: "1px solid rgba(255,255,255,.08)",
-                        borderRadius: 12, overflow: "hidden",
-                      }}>
-                        <button
-                          onClick={() => toggle(r.id)}
-                          style={{
-                            width: "100%", background: "transparent", border: "none",
-                            padding: "12px 14px", cursor: "pointer",
-                            display: "flex", alignItems: "center", justifyContent: "space-between",
-                            gap: 10, color: "#fff", fontWeight: 700, textAlign: "left",
-                            fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 13,
-                          }}
-                        >
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                            {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                            Round #{r.id}
-                          </span>
-                          <span>🏆 Tile <span style={{ color: "#22c55e", fontWeight: 900 }}>{r.winning_tile}</span></span>
-                          <span style={{ color: "#9ca3af" }}>{r.myBets.length} tile{r.myBets.length === 1 ? "" : "s"}</span>
-                          <span style={{ color: netColor(r.net), fontWeight: 800 }}>Net: {netLabel(r.net)}</span>
-                        </button>
-
-                        {isOpen && (
-                          <div style={{
-                            padding: "12px 14px 14px",
-                            borderTop: "1px dashed rgba(255,255,255,.10)",
-                            background: "rgba(255,255,255,.02)",
-                          }}>
-                            <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 10 }}>
-                              Winning tile: <span style={{ color: "#22c55e", fontWeight: 900 }}>{r.winning_tile}</span>
-                              {" · "}Pool: <b style={{ color: "#fff" }}>{r.total_pool.toFixed(3)} zkLTC</b>
-                            </div>
-                            <div style={{
-                              display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4,
-                              fontSize: 12, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                            }}>
-                              <THead>Tile</THead><THead>Amount</THead><THead>Result</THead>
-                              {r.myBets.map((b, i) => {
-                                const won = b.tile === r.winning_tile;
-                                return (
-                                  <React.Fragment key={i}>
-                                    <TCell>{b.tile}</TCell>
-                                    <TCell>{b.amount.toFixed(3)}</TCell>
-                                    <TCell color={won ? "#22c55e" : "#ef4444"}>
-                                      {won ? "✅ WON" : "❌ LOST"}
-                                    </TCell>
-                                  </React.Fragment>
-                                );
-                              })}
-                            </div>
-                            <div style={{ marginTop: 12, fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
-                              <span style={{ color: "#9ca3af" }}>Spent: <b style={{ color: "#fff" }}>{r.totalSpent.toFixed(3)} zkLTC</b></span>
-                              <span style={{ color: "#9ca3af" }}>Won: <b style={{ color: "#fff" }}>{r.totalWon.toFixed(3)} zkLTC</b></span>
-                              <span style={{ color: netColor(r.net), fontWeight: 800 }}>
-                                Net: {netLabel(r.net)}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${pageRounds.length}, minmax(0, 1fr))`,
+                  gap: 22,
+                  alignItems: "start",
+                }}>
+                  {pageRounds.map((r) => <RoundCard key={r.id} r={r} />)}
                 </div>
               )}
             </div>
 
             {/* Pagination */}
-            {address && rounds.length > PAGE_SIZE && (
+            {address && rounds.length > 0 && (
               <div style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                gap: 8, padding: "12px 20px",
-                borderTop: "1px solid rgba(255,255,255,.08)",
+                gap: 10, padding: "14px 22px 18px",
+                borderTop: "2px solid #0f172a",
+                background: "#ffffff",
               }}>
-                <PagerBtn disabled={safePage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</PagerBtn>
-                <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 700 }}>
-                  Page {safePage} of {totalPages}
+                <PagerBtn
+                  disabled={safePage <= 0}
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                >
+                  <ChevronLeft size={14} /> Prev
+                </PagerBtn>
+                <span style={{ fontSize: 13, color: "#0f172a", fontWeight: 800, letterSpacing: ".06em" }}>
+                  Page {safePage + 1} of {totalPages} · {rounds.length} round{rounds.length === 1 ? "" : "s"}
                 </span>
-                <PagerBtn disabled={safePage >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</PagerBtn>
+                <PagerBtn
+                  disabled={safePage >= totalPages - 1}
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                >
+                  Next <ChevronRight size={14} />
+                </PagerBtn>
               </div>
             )}
           </div>
@@ -298,36 +220,117 @@ export default function MyBetsModal({
   );
 }
 
-function SummaryCell({ label, value, color }: { label: string; value: string; color?: string }) {
+function RoundCard({ r }: { r: MyRound }) {
+  const won = r.net > 0;
   return (
-    <div style={{
-      background: "#161616", border: "1px solid rgba(255,255,255,.08)",
-      borderRadius: 10, padding: "8px 10px",
-      display: "flex", flexDirection: "column", gap: 2,
-    }}>
-      <span style={{ color: "#9ca3af", fontSize: 10, textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 700 }}>{label}</span>
-      <b style={{ color: color || "#fff", fontSize: 13, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>{value}</b>
+    <div style={{ position: "relative", paddingTop: 16 }}>
+      {/* WIN / LOSS badge */}
+      <div style={{
+        position: "absolute", top: 0, right: 14, zIndex: 2,
+        background: won ? "#16a34a" : "#dc2626",
+        color: "#fff", border: "2px solid #0f172a",
+        borderRadius: 999, padding: "10px 14px",
+        boxShadow: "3px 3px 0 0 rgba(15,23,42,.9)",
+        display: "flex", flexDirection: "column", alignItems: "center",
+        fontFamily: "'Space Grotesk',system-ui,sans-serif",
+        minWidth: 86,
+      }}>
+        <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: ".08em" }}>
+          {won ? "WIN" : "LOSS"}
+        </span>
+        <span className="mono" style={{ fontSize: 12, fontWeight: 800, marginTop: 2 }}>
+          {won ? "+" : ""}{r.net.toFixed(4)}
+        </span>
+      </div>
+
+      {/* Card body */}
+      <div style={{
+        background: "#ffffff", border: "2px solid #0f172a",
+        borderRadius: 14, padding: "16px 14px 14px",
+        boxShadow: "4px 4px 0 0 rgba(15,23,42,.9)",
+        display: "flex", flexDirection: "column", gap: 10,
+        minHeight: 380,
+      }}>
+        <div className="mono" style={{
+          fontSize: 18, fontWeight: 900, color: "#0f172a",
+          paddingBottom: 8, borderBottom: "1.5px dashed rgba(15,23,42,.18)",
+        }}>
+          #{r.id}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 320, overflowY: "auto", paddingRight: 4 }}>
+          {r.myBets.map((b, i) => {
+            const isWinner = b.tile === r.winning_tile;
+            return (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                gap: 8, padding: "9px 12px",
+                background: isWinner ? "#2563eb" : "#ffffff",
+                color: isWinner ? "#ffffff" : "#0f172a",
+                border: `2px solid ${isWinner ? "#0f172a" : "rgba(15,23,42,.65)"}`,
+                borderRadius: 10,
+                boxShadow: isWinner ? "2px 2px 0 0 rgba(15,23,42,.9)" : "none",
+                fontWeight: 700, fontSize: 13,
+              }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  <span style={{
+                    width: 16, height: 16, borderRadius: 4,
+                    background: isWinner ? "#ffffff" : "transparent",
+                    border: `2px solid ${isWinner ? "#ffffff" : "#0f172a"}`,
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    color: "#2563eb", fontSize: 11, fontWeight: 900, lineHeight: 1,
+                  }}>{isWinner ? "✓" : ""}</span>
+                  Tile {b.tile}
+                </span>
+                <span className="mono" style={{
+                  fontSize: 11, fontWeight: 800,
+                  padding: "3px 8px", borderRadius: 999,
+                  background: isWinner ? "#16a34a" : "rgba(15,23,42,.08)",
+                  color: isWinner ? "#fff" : "#475569",
+                }}>
+                  {b.amount.toFixed(3)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{
+          marginTop: "auto", paddingTop: 10,
+          borderTop: "1.5px dashed rgba(15,23,42,.18)",
+          fontSize: 12, color: "#475569",
+          display: "flex", flexDirection: "column", gap: 3,
+        }}>
+          <span>Winning tile: <b style={{ color: "#16a34a" }}>#{r.winning_tile}</b></span>
+          <span>Spent: <b className="mono" style={{ color: "#0f172a" }}>{r.totalSpent.toFixed(3)}</b> · Won: <b className="mono" style={{ color: "#0f172a" }}>{r.totalWon.toFixed(3)}</b></span>
+        </div>
+      </div>
     </div>
   );
 }
+
 function Empty({ children, color }: { children: React.ReactNode; color?: string }) {
-  return <div style={{ padding: 40, textAlign: "center", color: color || "#9ca3af", fontSize: 13 }}>{children}</div>;
+  return (
+    <div style={{
+      padding: 60, textAlign: "center", color: color || "#475569",
+      fontSize: 14, fontWeight: 700,
+    }}>{children}</div>
+  );
 }
-function THead({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontWeight: 800, color: "#fff", padding: "4px 6px", borderBottom: "1px solid rgba(255,255,255,.10)" }}>{children}</div>;
-}
-function TCell({ children, color }: { children: React.ReactNode; color?: string }) {
-  return <div style={{ padding: "4px 6px", color: color || "#fff", fontWeight: color ? 800 : 500 }}>{children}</div>;
-}
+
 function PagerBtn({ disabled, onClick, children }: { disabled?: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       onClick={onClick} disabled={disabled}
       style={{
-        background: "transparent", border: "1px solid rgba(255,255,255,.18)",
-        color: "#fff", fontWeight: 700, fontSize: 12, padding: "8px 14px",
-        borderRadius: 10, cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.4 : 1, fontFamily: "inherit",
+        display: "inline-flex", alignItems: "center", gap: 6,
+        background: "#ffffff", border: "2px solid #0f172a",
+        color: "#0f172a", fontWeight: 800, fontSize: 12,
+        padding: "8px 14px", borderRadius: 10,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.4 : 1,
+        boxShadow: disabled ? "none" : "2px 2px 0 0 rgba(15,23,42,.9)",
+        fontFamily: "inherit", letterSpacing: ".05em", textTransform: "uppercase",
       }}
     >{children}</button>
   );
