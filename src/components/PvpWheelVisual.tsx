@@ -54,7 +54,7 @@ export default function PvpWheelVisual({
 }) {
   // ---- animation state ----
   const [highlighted, setHighlighted] = React.useState<number | null>(null);
-  const [allBlink, setAllBlink] = React.useState(false);
+  const [allBlink] = React.useState(false);
   const [winnerTile, setWinnerTile] = React.useState<number | null>(null);
   const [dimOthers, setDimOthers] = React.useState(false);
   const [shake, setShake] = React.useState(false);
