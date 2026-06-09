@@ -488,6 +488,8 @@ export default function PvpPage({ onBack }: { onBack: () => void }) {
       setSelectedTilesState(new Set());
       loadMyBets();
       loadStatus();
+      setMyBetsRefresh((n) => n + 1);
+      window.setTimeout(() => setMyBetsRefresh((n) => n + 1), 2500);
     } else if (errMsg) {
       setToast(`❌ ${errMsg}`);
     }
