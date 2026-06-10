@@ -676,7 +676,7 @@ export default function PvpPage({ onBack, onAbout }: { onBack: () => void; onAbo
           </div>
 
           {/* ENDED ROUNDS (right column) */}
-          <EndedRoundsPanel history={history} onVerify={openVerify} />
+          <EndedRoundsPanel history={history} loading={historyLoading} onVerify={openVerify} />
         </div>
 
         
