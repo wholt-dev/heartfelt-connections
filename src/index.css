@@ -227,6 +227,7 @@ input,button{font-family:inherit}
 .hero h1{font-family:var(--display);font-size:clamp(40px,8vw,80px);font-weight:700;letter-spacing:-.04em;line-height:.96;margin-bottom:22px}
 .hero h1 .grad{background:linear-gradient(135deg,var(--accent) 10%,var(--accent-2) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero-sub{font-size:clamp(15px,2vw,18px);color:var(--text-2);max-width:600px;margin:0 auto 34px;line-height:1.65}
+.enter-btn-row{display:inline-flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
 .enter-btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;padding:16px 30px;border-radius:14px;border:0;cursor:pointer;
   background:linear-gradient(135deg,var(--accent),#9d7bff);color:#fff;box-shadow:0 8px 30px rgba(124,92,255,.5);transition:transform .25s var(--ease),filter .2s,box-shadow .25s}
 .enter-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 12px 40px rgba(124,92,255,.65)}
