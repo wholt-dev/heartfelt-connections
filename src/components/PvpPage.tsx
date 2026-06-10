@@ -334,6 +334,18 @@ export default function PvpPage({ onBack, onAbout }: { onBack: () => void; onAbo
     return () => clearInterval(id);
   }, [loadHistory]);
 
+  // refetch immediately when the tab/page becomes visible again
+  React.useEffect(() => {
+    const onVisible = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        loadStatus();
+        loadHistory();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [loadStatus, loadHistory]);
+
   // poll user's bets when connected
   const loadMyBets = React.useCallback(async () => {
     if (!addr) { setMyBets([]); return; }
