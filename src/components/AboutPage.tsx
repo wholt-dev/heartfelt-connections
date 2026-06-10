@@ -196,7 +196,7 @@ Multiplier = payout / yourBet
 
         {/* SECTION 3 */}
         <div style={sectionWrap}>
-          <h3 style={sectionTitle}>3 · Interactive Payout Calculator</h3>
+          <h3 style={sectionTitle}>3 Interactive Payout Calculator</h3>
           <Slider label="Your bet on winning tile" min={0.01} max={2.0} step={0.01} value={yourBet} onChange={setYourBet} suffix="zkLTC" />
           <Slider label="Total bets on winning tile" min={yourBet} max={totalPool} step={0.01} value={winTileTotal} onChange={setWinTileTotal} suffix="zkLTC" />
           <Slider label="Total pool this round" min={0.1} max={10.0} step={0.1} value={totalPool} onChange={setTotalPool} suffix="zkLTC" />
@@ -215,7 +215,7 @@ Multiplier = payout / yourBet
 
         {/* SECTION 4 */}
         <div style={sectionWrap}>
-          <h3 style={sectionTitle}>4 · Multiplier Curve</h3>
+          <h3 style={sectionTitle}>4 Multiplier Curve</h3>
           <div style={{ width: "100%", height: 280 }}>
             <ResponsiveContainer>
               <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 18 }}>
@@ -241,7 +241,7 @@ Multiplier = payout / yourBet
 
         {/* SECTION 5 */}
         <div style={sectionWrap}>
-          <h3 style={sectionTitle}>5 · Pool Distribution</h3>
+          <h3 style={sectionTitle}>5 Pool Distribution</h3>
           <div className="about-pie-row">
             <div style={{ width: "100%", height: 220 }}>
               <ResponsiveContainer>
@@ -265,7 +265,7 @@ Multiplier = payout / yourBet
 
         {/* SECTION 6 */}
         <div style={sectionWrap}>
-          <h3 style={sectionTitle}>6 · Expected Value (Any Strategy)</h3>
+          <h3 style={sectionTitle}>6 Expected Value (Any Strategy)</h3>
           <pre style={codeBlock}>{`For ANY bet amount I across ANY tiles:
 
 Expected Return = I × 0.95
@@ -282,7 +282,7 @@ More tiles  = low variance (steady small returns)`}</pre>
 
         {/* SECTION 7 */}
         <div style={sectionWrap}>
-          <h3 style={sectionTitle}>7 · Drand Provably Fair Randomness</h3>
+          <h3 style={sectionTitle}>7 Drand Provably Fair Randomness</h3>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
             {["🏛 Cloudflare", "🏛 EPFL", "🏛 Univ. of Chile"].map((s) => (
               <span key={s} style={{
@@ -321,7 +321,7 @@ More tiles  = low variance (steady small returns)`}</pre>
 
         {/* SECTION 8 */}
         <div style={sectionWrap}>
-          <h3 style={sectionTitle}>8 · Bonanza Rounds</h3>
+          <h3 style={sectionTitle}>8 Bonanza Rounds</h3>
           <div className="about-grid-2">
             <div style={{ ...card }}>
               <div style={{ fontWeight: 900, fontSize: 14, marginBottom: 8, color: INK }}>Normal Round</div>
