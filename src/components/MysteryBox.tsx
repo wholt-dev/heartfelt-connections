@@ -340,16 +340,15 @@ export default function MysteryBox({
               <>
                 <div style={{
                   display: "inline-flex", alignItems: "center", gap: 8,
-                  background: maxed ? "#fee2e2" : canClaim ? "#dcfce7" : "#f1f5f9",
-                  border: "2px solid #000", borderRadius: 999,
+                  background: "#3b82f6", border: "2px solid #000", borderRadius: 8,
                   padding: "6px 14px", fontWeight: 900, fontSize: 13,
-                  fontFamily: "ui-monospace,monospace", color: "#0a0a0a",
-                  boxShadow: "3px 3px 0 0 rgba(0,0,0,.9)",
+                  fontFamily: "ui-monospace,monospace", color: "#fff",
+                  boxShadow: "2px 2px 0 0 #000",
                 }}>
-                  <span style={{ color: canClaim ? "#16a34a" : "#0a0a0a" }}>{state.betsProgress}</span>
-                  <span style={{ opacity: .5 }}>/</span>
+                  <span>{state.betsProgress}</span>
+                  <span style={{ opacity: .6 }}>/</span>
                   <span>{BETS_NEEDED}</span>
-                  <span style={{ fontSize: 10, letterSpacing: ".12em", textTransform: "uppercase", color: "#475569", marginLeft: 4 }}>bets</span>
+                  <span style={{ fontSize: 10, letterSpacing: ".12em", textTransform: "uppercase", marginLeft: 4 }}>bets</span>
                 </div>
 
                 <div style={{ width: "100%", height: 8, background: "#f1f5f9", borderRadius: 999, overflow: "hidden", border: "2px solid #000" }}>
