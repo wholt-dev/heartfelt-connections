@@ -422,7 +422,7 @@ export default function MysteryBox({
                     ? "All 3 boxes claimed — come back tomorrow"
                     : canClaim
                     ? "Tap the box to open!"
-                    : `Place ${BETS_NEEDED - state.betsProgress} more bet${BETS_NEEDED - state.betsProgress === 1 ? "" : "s"} to unlock`}
+                    : `Place ${state.betsNeeded - state.betsProgress} more bet${state.betsNeeded - state.betsProgress === 1 ? "" : "s"} to unlock`}
                 </div>
               </>
             )}
