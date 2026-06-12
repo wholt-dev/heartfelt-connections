@@ -186,7 +186,7 @@ export default function MysteryBox({
     }, 2000);
   };
 
-  const pct = Math.min(100, (state.betsProgress / BETS_NEEDED) * 100);
+  const pct = Math.min(100, (state.betsProgress / Math.max(1, state.betsNeeded)) * 100);
 
   return (
     <>
