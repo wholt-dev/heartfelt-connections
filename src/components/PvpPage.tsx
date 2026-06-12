@@ -631,6 +631,7 @@ export default function PvpPage({ onBack, onAbout }: { onBack: () => void; onAbo
             placing={placing}
             myBets={myBetsThisRound.map((b) => ({ tile: b.tile, amount: Number(b.amount) }))}
             walletConnected={!!addr}
+            walletAddress={addr}
             onConnect={() => openConnectModal?.()}
             autoActive={!!autoCfg}
             autoRoundsLeft={autoCfg?.autoReload ? Infinity as any : (autoCfg?.roundsLeft ?? 0)}
