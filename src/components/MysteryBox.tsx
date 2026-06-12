@@ -83,6 +83,7 @@ export default function MysteryBox({
   const [stage, setStage] = React.useState<"idle" | "shake" | "burst" | "reveal">("idle");
   const [reward, setReward] = React.useState<{ rarity: Rarity; points: number } | null>(null);
   const [rotZ, setRotZ] = React.useState(0);
+  const [statusReady, setStatusReady] = React.useState(false);
   const dragRef = React.useRef<{ x: number; y: number; rz: number; moved: boolean } | null>(null);
 
   const onPointerDown = (e: React.PointerEvent) => {
@@ -114,11 +115,13 @@ export default function MysteryBox({
       if (!r.ok) return;
       const j = await r.json();
       setState(normalizeStatus(j));
+      setStatusReady(true);
     } catch { /* */ }
   }, [walletAddress]);
 
   React.useEffect(() => {
     if (!walletAddress) {
+      setStatusReady(false);
       setState({
         betsProgress: 0, todayBoxes: 0,
         betsNeeded: DEFAULT_BETS_NEEDED, maxBoxes: DEFAULT_MAX_BOXES,
