@@ -32,7 +32,7 @@ const DEFAULT_MAX_BOXES = 3;
 
 const API_BASE =
   (import.meta as any).env?.VITE_API_URL ||
-  "https://betsonblock.test-hub.xyz";
+  "https://lit-api.test-hub.xyz";
 
 type State = {
   betsProgress: number;
