@@ -268,21 +268,30 @@ export default function YourBetsModal({
               <>
                 <div style={cardGrid}>
                   {pageGroups.map((g) => {
-                    const won = g.net >= 0;
+                    const hasWin = g.bets.some((b) => b.win);
+                    const hasRefund = g.bets.some((b) => !b.win && (b.refund || b.payout > 0));
+                    const kind: "win" | "loss" | "refund" =
+                      hasWin ? (g.net >= 0 ? "win" : "loss")
+                      : hasRefund && !g.bets.some((b) => betKind(b) === "loss") ? "refund"
+                      : "loss";
+                    const isPos = kind === "win" || (kind === "refund" && g.totalPayout > 0);
+                    const sign = kind === "win" ? (g.net >= 0 ? "+" : "-") : kind === "refund" ? "↩ " : "-";
+                    const amt = kind === "refund" ? g.totalPayout : Math.abs(g.net);
+                    const footerBg = kind === "win" ? "#22c55e" : kind === "refund" ? "#f59e0b" : "#ef4444";
                     return (
                       <BetCard
                         key={`ended-${g.block}`}
                         blockKey={`ended-${g.block}`}
                         blockLabel={`#${g.block.toLocaleString()}`}
-                        badgeKind={won ? "win" : "loss"}
-                        badgeValue={<><>{won ? "+" : "-"}</><Coin size={11} />{Math.abs(g.net).toFixed(4)}</>}
+                        badgeKind={kind}
+                        badgeValue={<><>{sign}</><Coin size={11} />{amt.toFixed(4)}</>}
                         betsByMode={Object.fromEntries(g.bets.map((b) => [b.mode, b]))}
                         showPointsBadge
                         onModeClick={(m) => openDetail(`ended-${g.block}`, m, g.block)}
                         footer={
                           <a href={`${EXPLORER}/block/${g.block}`} target="_blank" rel="noreferrer"
                             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                              marginTop: 14, background: won ? "#22c55e" : "#ef4444", color: "#fff",
+                              marginTop: 14, background: footerBg, color: "#fff",
                               border: "3px solid #000", borderRadius: 10, padding: "10px 12px",
                               fontWeight: 800, textDecoration: "none",
                               boxShadow: "3px 3px 0 0 rgba(0,0,0,.9)" }}>
