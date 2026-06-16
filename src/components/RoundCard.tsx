@@ -450,7 +450,28 @@ export default function RoundCard({
           <div className={`pm-bv-pill ${["even","high","over"].includes(finalPick) ? "em" : "ro"}`}>
             {mode.label}: {String(finalPick).toUpperCase() || "—"}
           </div>
-          <div className="pm-bv-stake"><span>Stake (fixed)</span><b><Coin size={14} /> 0.01 zkLTC</b></div>
+          <div className="pm-bv-stake">
+            <span>Stake (locked)</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Coin size={14} />
+              <input
+                type="text"
+                value="0.01"
+                disabled
+                readOnly
+                style={{
+                  width: 70, textAlign: "right",
+                  background: "rgba(0,0,0,.25)",
+                  border: "1px solid var(--line)",
+                  borderRadius: 6, padding: "4px 8px",
+                  color: "inherit", fontWeight: 800,
+                  fontFamily: "ui-monospace,monospace",
+                  cursor: "not-allowed", opacity: 0.85,
+                }}
+              />
+              <span style={{ fontSize: 11, opacity: .8 }}>zkLTC</span>
+            </span>
+          </div>
           {mode.multiplier > 0 && <div className="pm-bv-win"><span>If you win</span><b className="em"><Coin size={14} /> {(BET * mode.multiplier).toFixed(4)} zkLTC</b></div>}
           <button className="pm-confirm" disabled={!canConfirm} onClick={confirm}>
             <LeverSwitch pulled={confirmPulled} side={finalPick} size={26} />
