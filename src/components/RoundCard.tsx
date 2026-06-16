@@ -97,6 +97,14 @@ export default function RoundCard({
   const myStakeInMode = myBets.filter((b) => b.mode === mode.id).length * BET;
   const yourSharePct = modePool > 0 ? (myStakeInMode / modePool) * 100 : 0;
 
+  // preview share for non-binary modes (what you'd get if you place this bet)
+  const hasValidPickForShare =
+    mode.kind === "digit" ? HEX.includes(pick) :
+    mode.kind === "number" ? num !== "" :
+    mode.kind === "perfectblock" ? (pbPrefix !== "" && num.length === 3) :
+    false;
+  const previewSharePct = modePool + BET > 0 ? (BET / (modePool + BET)) * 100 : 0;
+
   const openBet = (side: string) => {
     if (!addr) { onNeedConnect(); return; }
     if (!isOpen) return;
