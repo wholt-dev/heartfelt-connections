@@ -97,6 +97,14 @@ export default function RoundCard({
   const myStakeInMode = myBets.filter((b) => b.mode === mode.id).length * BET;
   const yourSharePct = modePool > 0 ? (myStakeInMode / modePool) * 100 : 0;
 
+  // preview share for non-binary modes (what you'd get if you place this bet)
+  const hasValidPickForShare =
+    mode.kind === "digit" ? HEX.includes(pick) :
+    mode.kind === "number" ? num !== "" :
+    mode.kind === "perfectblock" ? (pbPrefix !== "" && num.length === 3) :
+    false;
+  const previewSharePct = modePool + BET > 0 ? (BET / (modePool + BET)) * 100 : 0;
+
   const openBet = (side: string) => {
     if (!addr) { onNeedConnect(); return; }
     if (!isOpen) return;
@@ -262,36 +270,69 @@ export default function RoundCard({
                   background: "rgba(124,92,255,.14)", color: "#7c5cff",
                   border: "1px solid rgba(124,92,255,.45)",
                   padding: "3px 8px", borderRadius: 999,
-                }}>P2P · 0.01 zkLTC flat</span>
+                }}>⚡ P2P · 0.01 zkLTC flat</span>
               </div>
               <div className="pm-banks">
                 <div>
                   <p>Pool {sideA.toUpperCase()}</p>
                   <b className="em"><Coin size={14} /> {bankA.toFixed(2)}</b>
                   <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, fontWeight: 700 }}>
-                    {playersA} opponent{playersA === 1 ? "" : "s"} waiting
+                    {playersB} opponent{playersB === 1 ? "" : "s"} waiting
                   </div>
                 </div>
                 <div>
                   <p>Pool {sideB.toUpperCase()}</p>
                   <b className="ro"><Coin size={14} /> {bankB.toFixed(2)}</b>
                   <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, fontWeight: 700 }}>
-                    {playersB} opponent{playersB === 1 ? "" : "s"} waiting
+                    {playersA} opponent{playersA === 1 ? "" : "s"} waiting
                   </div>
                 </div>
               </div>
             </>
+          ) : mode.id === "closest" ? (
+            <>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 800, letterSpacing: ".14em",
+                  textTransform: "uppercase",
+                  background: "rgba(34,211,238,.14)", color: "#22d3ee",
+                  border: "1px solid rgba(34,211,238,.45)",
+                  padding: "3px 8px", borderRadius: 999,
+                }}>🎯 PVP POOL</span>
+              </div>
+              <div className="pm-banks">
+                <div>
+                  <p>Total Pool</p>
+                  <b style={{ color: "#000" }}><Coin size={14} /> {modePool.toFixed(2)} zkLTC</b>
+                </div>
+                <div>
+                  <p>Your Share</p>
+                  <b className="em">{yourSharePct.toFixed(1)}%</b>
+                </div>
+              </div>
+            </>
           ) : (
-            <div className="pm-banks">
-              <div>
-                <p>Total Pool</p>
-                <b style={{ color: "#000" }}><Coin size={14} /> {modePool.toFixed(2)} zkLTC</b>
+            <>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 800, letterSpacing: ".14em",
+                  textTransform: "uppercase",
+                  background: "rgba(34,211,238,.14)", color: "#22d3ee",
+                  border: "1px solid rgba(34,211,238,.45)",
+                  padding: "3px 8px", borderRadius: 999,
+                }}>🎯 PVP POOL</span>
               </div>
-              <div>
-                <p>Your Share</p>
-                <b className="em">{yourSharePct.toFixed(1)}%</b>
+              <div className="pm-banks">
+                <div>
+                  <p>Total Pool</p>
+                  <b style={{ color: "#000" }}><Coin size={14} /> {modePool.toFixed(2)} zkLTC</b>
+                </div>
+                <div>
+                  <p>Your Share</p>
+                  <b className="em">{!addr || modeAlreadyBet || !hasValidPickForShare ? "--" : `${previewSharePct.toFixed(1)}%`}</b>
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* mode selector */}
