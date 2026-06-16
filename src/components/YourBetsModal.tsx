@@ -16,7 +16,14 @@ type EndedBet = {
   payout: number;
   settledAt: number;
   payoutTx?: string | null;
+  refund?: boolean;
 };
+
+function betKind(b: { win: boolean; payout: number; refund?: boolean }): "win" | "refund" | "loss" {
+  if (b.win) return "win";
+  if (b.refund === true || (b.payout > 0 && !b.win)) return "refund";
+  return "loss";
+}
 
 type LiveGroup = {
   roundId: number;
