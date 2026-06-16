@@ -18,11 +18,11 @@ export const MODES: ModeMeta[] = [
   { id: "coinflip", label: "Coin Flip", desc: "Will the block hash be even or odd?", multiplier: 1.96, kind: "binary", picks: ["even", "odd"] },
   { id: "hilo", label: "Hi-Lo", desc: "Last hex digit Low (0-7) or High (8-f)?", multiplier: 1.96, kind: "binary", picks: ["low", "high"] },
   { id: "digit", label: "Lucky Digit", desc: "Guess the hash's last hex digit (0-f).", multiplier: 15.5, kind: "digit" },
-  { id: "number", label: "Number 0-99", desc: "Guess hash mod 100. Hit it for a 97x payout.", multiplier: 97, kind: "number", hint: "0-99" },
+  { id: "number", label: "Number 0-99", desc: "Guess hash mod 100. Winners share the pool.", multiplier: 97, kind: "number", hint: "0-99" },
   { id: "txou", label: "Txn O/U", desc: "More than 5 transactions in the block?", multiplier: 1.96, kind: "binary", picks: ["over", "under"] },
   { id: "gasou", label: "Gas O/U", desc: "Will gas used exceed 500,000?", multiplier: 1.96, kind: "binary", picks: ["over", "under"] },
   { id: "closest", label: "Closest (PvP)", desc: "Guess hash mod 1000. Closest player wins the whole pot.", multiplier: 0, kind: "pvp", hint: "0-999" },
-  { id: "perfectblock", label: "Perfect Block", desc: "Guess the exact block number → 50× reward.", multiplier: 50, kind: "perfectblock", hint: "block number" },
+  { id: "perfectblock", label: "Perfect Block", desc: "Guess the exact block number → winners share the pool.", multiplier: 50, kind: "perfectblock", hint: "block number" },
 ];
 
 export const MODE_MAP: Record<string, ModeMeta> = Object.fromEntries(MODES.map((m) => [m.id, m]));
