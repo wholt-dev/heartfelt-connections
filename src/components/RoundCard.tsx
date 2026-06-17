@@ -267,25 +267,19 @@ export default function RoundCard({
                 <span style={{
                   fontSize: 10, fontWeight: 800, letterSpacing: ".14em",
                   textTransform: "uppercase",
-                  background: "rgba(124,92,255,.14)", color: "#7c5cff",
-                  border: "1px solid rgba(124,92,255,.45)",
+                  background: "rgba(253,224,71,.16)", color: "#fde047",
+                  border: "1px solid rgba(253,224,71,.5)",
                   padding: "3px 8px", borderRadius: 999,
-                }}>⚡ P2P · 0.01 zkLTC flat</span>
+                }}>🏆 Winner takes pool</span>
               </div>
               <div className="pm-banks">
                 <div>
                   <p>Pool {sideA.toUpperCase()}</p>
-                  <b className="em"><Coin size={14} /> {bankA.toFixed(2)}</b>
-                  <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, fontWeight: 700 }}>
-                    {playersB} opponent{playersB === 1 ? "" : "s"} waiting
-                  </div>
+                  <b className="em"><Coin size={14} /> {bankA.toFixed(2)} zkLTC</b>
                 </div>
                 <div>
                   <p>Pool {sideB.toUpperCase()}</p>
-                  <b className="ro"><Coin size={14} /> {bankB.toFixed(2)}</b>
-                  <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, fontWeight: 700 }}>
-                    {playersA} opponent{playersA === 1 ? "" : "s"} waiting
-                  </div>
+                  <b className="ro"><Coin size={14} /> {bankB.toFixed(2)} zkLTC</b>
                 </div>
               </div>
             </>
@@ -374,9 +368,17 @@ export default function RoundCard({
               </div>
               <div className="pm-bar"><div className="em-fill" style={{ width: `${votedA}%` }} /></div>
               <div className="pm-players"><span>{playersA} players</span><span>{playersB} players</span></div>
-              <div style={{ fontSize: 12, color: "var(--text-2)", margin: "6px 0 8px", textAlign: "center" }}>
-                <span>If matched: <b style={{ color: "#00e5ff" }}><Coin size={13} /> 0.0196 zkLTC</b></span>
-              </div>
+              {(() => {
+                const mySideBank = pick === sideA ? bankA : bankB;
+                const myPool = mySideBank + BET;
+                const totalPool = bankA + bankB + BET;
+                const estimate = totalPool * 0.99 * (BET / myPool);
+                return (
+                  <div style={{ fontSize: 12, color: "var(--text-2)", margin: "6px 0 8px", textAlign: "center" }}>
+                    <span>If you win: <b style={{ color: "#00e5ff" }}><Coin size={13} /> ~{estimate.toFixed(4)} zkLTC</b></span>
+                  </div>
+                );
+              })()}
               <div className="pm-actions">
                 <button className="pm-yes glow" disabled={!isOpen} onClick={() => openBet(sideA)}>
                   <LeverSwitch pulled={leverPulled === sideA} side={sideA} size={26} />
@@ -449,7 +451,7 @@ export default function RoundCard({
                   {modePool > 0 ? (
                     <span>If you win: <b style={{ color: "#00e5ff" }}><Coin size={13} /> ~{(modePool * 0.99).toFixed(4)} zkLTC</b> (your share)</span>
                   ) : (
-                    <span style={{ color: "#00e5ff" }}>Be first — winner takes all bets</span>
+                    <span style={{ color: "#00e5ff" }}>Be first · winner takes all bets</span>
                   )}
                 </div>
               )}
@@ -458,7 +460,7 @@ export default function RoundCard({
                   {modePool > 0 ? (
                     <span>If you win: <b style={{ color: "#00e5ff" }}><Coin size={13} /> ~{(modePool * 0.99).toFixed(4)} zkLTC</b> (your share)</span>
                   ) : (
-                    <span style={{ color: "#00e5ff" }}>Be first — winner takes all bets</span>
+                    <span style={{ color: "#00e5ff" }}>Be first · winner takes all bets</span>
                   )}
                 </div>
               )}
